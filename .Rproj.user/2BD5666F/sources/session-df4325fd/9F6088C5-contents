@@ -1,0 +1,89 @@
+study_ct <-
+  data.frame(
+    stringsAsFactors = FALSE,
+    codelist_code = c("C66727","C66727",
+                      "C66727","C66727","C66727","C66727","C66727","C66727",
+                      "C66727","C66727"),
+    term_code = c("C41331","C25250",
+                  "C28554","C48226","C48227","C48250","C142185","C49628",
+                  "C49632","C49634"),
+    term_value = c("ADVERSE EVENT",
+                   "COMPLETED","DEATH","LACK OF EFFICACY","LOST TO FOLLOW-UP",
+                   "PHYSICIAN DECISION","PROTOCOL VIOLATION",
+                   "SCREEN FAILURE","STUDY TERMINATED BY SPONSOR",
+                   "WITHDRAWAL BY SUBJECT"),
+    collected_value = c("Adverse Event",
+                        "Complete","Dead","Lack of Efficacy","Lost To Follow-Up",
+                        "Physician Decision","Protocol Violation",
+                        "Trial Screen Failure","Study Terminated By Sponsor",
+                        "Withdrawal by Subject"),
+    term_preferred_term = c("AE","Completed","Died",
+                            NA,NA,NA,"Violation",
+                            "Failure to Meet Inclusion/Exclusion Criteria",NA,"Dropout"),
+    term_synonyms = c("ADVERSE EVENT",
+                      "COMPLETE","Death",NA,NA,NA,NA,NA,NA,
+                      "Discontinued Participation")
+  )
+
+library(sdtm.oak)
+library(pharmaverseraw)
+library(dplyr)
+
+ds_raw <- pharmaverseraw::ds_raw
+
+ds_raw <- ds_raw %>%
+  generate_oak_id_vars(
+    pat_var = "PATNUM",
+    raw_src = "ds_raw"
+  )
+
+ds <-
+  assign_no_ct(
+    raw_dat = ds_raw,
+    raw_var = "IT.DSTERM",
+    tgt_var = "DSTERM",
+    id_vars = oak_id_vars()
+  ) %>%
+  assign_no_ct(
+    raw_dat = ds_raw,
+    raw_var = "IT.DSDECOD",
+    tgt_var = "DSDECOD",
+    id_vars = oak_id_vars()
+  ) %>%
+  assign_no_ct(
+    raw_dat = ds_raw,
+    raw_var = "IT.DSSTDAT",
+    tgt_var = "DSSTDTC",
+    id_vars = oak_id_vars()
+  )
+
+ds <- ds %>%
+  dplyr::mutate(
+    STUDYID = ds_raw$STUDY,
+    DOMAIN = "DS",
+    USUBJID = paste0("01-", ds_raw$PATNUM),
+    DSDECOD = toupper(DSDECOD),
+    DSTERM = toupper(DSTERM),
+    DSCAT = "DISPOSITION EVENT",
+    VISIT    = NA_character_,
+    VISITNUM = NA_real_,
+    DSDTC = DSSTDTC,
+    DSSTDY = NA_real_
+  ) %>%
+  derive_seq(
+    tgt_var = "DSSEQ",
+    rec_vars = c("DSTERM", "DSDECOD", "DSSTDTC")
+  ) %>%
+  dplyr::select(
+    STUDYID, DOMAIN, USUBJID, DSSEQ,
+    DSTERM, DSDECOD, DSCAT, VISITNUM, VISIT,
+    DSDTC, DSSTDTC, DSSTDY
+  )
+
+stopifnot(exists("ds"))
+
+dir.create("question_1_sdtm/output", recursive = TRUE, showWarnings = FALSE)
+
+saveRDS(ds, "question_1_sdtm/output/ds.rds")
+write.csv(ds, "question_1_sdtm/output/ds.csv", row.names = FALSE)
+message("Saved DS to question_1_sdtm/output/ds.rds and ds.csv")

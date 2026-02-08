@@ -1,0 +1,18 @@
+Error in `mutate()`:
+ℹ In argument: `ACTARM = convert_blanks_to_na(ACTARM)`.
+Caused by error in `convert_blanks_to_na()`:
+! could not find function "convert_blanks_to_na"
+Backtrace:
+     ▆
+  1. ├─pharmaverseadam::adsl %>% ...
+  2. ├─dplyr::mutate(., ACTARM = convert_blanks_to_na(ACTARM))
+  3. ├─dplyr:::mutate.data.frame(., ACTARM = convert_blanks_to_na(ACTARM))
+  4. │ └─dplyr:::mutate_cols(.data, dplyr_quosures(...), by)
+  5. │   ├─base::withCallingHandlers(...)
+  6. │   └─dplyr:::mutate_col(dots[[i]], data, mask, new_columns)
+  7. │     └─mask$eval_all_mutate(quo)
+  8. │       └─dplyr (local) eval()
+  9. └─base::.handleSimpleError(...)
+ 10.   └─dplyr (local) h(simpleError(msg, call))
+ 11.     └─rlang::abort(message, class = error_class, parent = parent, call = error_call)
+Execution halted

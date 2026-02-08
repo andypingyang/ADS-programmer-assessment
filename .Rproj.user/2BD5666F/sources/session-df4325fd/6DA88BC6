@@ -1,0 +1,26 @@
+{
+    "id": "6DA88BC6",
+    "path": "/cloud/project/question_3_tlg/02_create_visualizations.R",
+    "project_path": "question_3_tlg/02_create_visualizations.R",
+    "type": "r_source",
+    "hash": "0",
+    "contents": "",
+    "dirty": false,
+    "created": 1770485401297.0,
+    "source_on_save": false,
+    "relative_order": 14,
+    "properties": {
+        "source_window_id": "",
+        "Source": "Source",
+        "cursorPosition": "105,13",
+        "scrollLine": "101"
+    },
+    "folds": "",
+    "lastKnownWriteTime": 1770545486,
+    "encoding": "UTF-8",
+    "collab_server": "",
+    "source_window": "",
+    "last_content_update": 1770545486485,
+    "read_only": false,
+    "read_only_alternatives": []
+}

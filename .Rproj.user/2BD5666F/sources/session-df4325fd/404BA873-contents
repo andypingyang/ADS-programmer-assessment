@@ -1,0 +1,38 @@
+ae_raw <- pharmaverseraw::ae_raw
+install.packages(
+  "pharmaversesdtm",
+  repos = c("https://pharmaverse.r-universe.dev", "https://cloud.r-project.org")
+)
+library(pharmaversesdtm)
+dm <- pharmaversesdtm::dm
+ae_raw_1 <- ae_raw %>%
+  generate_oak_id_vars(
+    pat_var = "PATNUM",
+    raw_src = "ae_raw"
+  )
+dir.create("metadata", showWarnings = FALSE)
+study_ct <- data.frame(
+  codelist = c("AESEV", "AESER"),
+  coded_value = c("MILD", "Y"),
+  decode = c("Mild", "Yes"),
+  stringsAsFactors = FALSE
+)
+
+write.csv(
+  study_ct,
+  "metadata/sdtm_ct.csv",
+  row.names = FALSE
+)
+study_ct <- read.csv("metadata/sdtm_ct.csv", stringsAsFactors = FALSE)
+
+git clone https://github.com/pharmaverse/examples.git
+
+ae <-
+  # Derive topic variable
+  # Map AETERM using assign_no_ct, raw_var=IT.AETERM, tgt_var=AETERM
+  assign_no_ct(
+    raw_dat = ae_raw_1,
+    raw_var = "IT.AETERM",
+    tgt_var = "AETERM",
+    id_vars = oak_id_vars()
+  )
